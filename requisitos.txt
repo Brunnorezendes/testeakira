@@ -1,0 +1,175 @@
+# Teste Akira
+
+Você vai construir um sistema de gestão de tasks. Não tem problema ele estar feio, o importante é aprender a usar as funcionalidades, mas se tiver bonito é um +.
+
+---
+
+## 1. Requisitos do Projeto – Funcionalidades
+
+- **Autenticação e Gerenciamento de Usuários**
+    - Cadastro, login, recuperação de senha e gerenciamento de sessões utilizando Better Auth.
+    - Perfis de usuário com atualização de informações e histórico de interações (tarefas atribuídas, concluídas, comentários, etc.).
+    - Proteção de áreas restritas com middlewares.
+- **Gestão Avançada de Tarefas**
+    - **CRUD Completo:** Criação, edição, exclusão e visualização de tarefas.
+    - **Atributos Adicionais:** Definição de prioridade, data de vencimento e status (A fazer, Em progresso, Concluído).
+    - **Filtragem e Ordenação:** Filtros dinâmicos por status, prioridade e data.
+- **Dashboard de Analytics e Insights**
+    - **Integração com PostHog:** Monitoramento de eventos do usuário (criação, edição, conclusão de tarefas, login/logout, etc).
+    - **Visualização de Dados:** Exibição de gráficos e relatórios com métricas (por exemplo, tarefas concluídas por dia, tempo médio de conclusão). Não precisa programar esse aqui, é só usar a própria ferramenta do posthog
+- **Interface e Experiência do Usuário**
+    - **Visualizações Diferenciadas:** Suporte para Kanban e visualização em lista.
+    - **Internacionalização (i18n):** Suporte a múltiplos idiomas.
+- **Renderização e Otimização com Next15**
+    - Uso de **SSR** (Server-Side Rendering) para páginas dinâmicas, como o dashboard e detalhes das tarefas.
+    - Uso de **SSG** (Static Site Generation) para páginas institucionais ou de ajuda.
+    - Implementação de **ISR** (Incremental Static Regeneration) para atualizar conteúdos estáticos sem rebuild total.
+    - **Middleware:** Para controle de acesso e autenticação.
+    - **Server Actions:** Para operações de CRUD e interações diretas entre a interface e o backend.
+    - **Dynamic Routing e App Router:** Utilização do novo App Router para definir rotas dinâmicas (ex.: `/tasks/[id]`) e rotas aninhadas.
+    - **Otimização de Imagens e SEO:** Uso do componente `<Image>` para otimização e do `<Head>` para metatags e SEO.
+    - **Navegação com Link:** Utilizar o componente `<Link>` para transições suaves entre páginas.
+- **Testes Automatizados**
+    - **Jest:** Testes unitários para funções e regras de negócio.
+    - **Playwright:** Testes end-to-end para fluxos críticos (login, criação e edição de tarefas, colaboração).
+- **Containerização com Docker**
+    - Configuração de Dockerfile e docker-compose para garantir ambientes consistentes para desenvolvimento e produção.
+
+---
+
+## 2. Tecnologias a Serem Utilizadas
+
+Para hostear o projeto você pode usar a vercel que tem plano gratuito, e pra banco de dados da pra usar o supabase que tem um postgresql gratuito (mas usando prisma pra fazer as requests)
+
+- **Next15:**
+    
+    Utilizar diversas funcionalidades modernas do framework:
+    
+    - **App Router:** Organização das rotas por meio do novo sistema de diretórios (pasta `app/`), definindo arquivos como `layout.tsx`, `error.tsx` e `loading.tsx` para estrutura global.
+    - **SSR, SSG e ISR:**
+        - **SSR:** Para páginas que requerem dados atualizados em tempo real (ex.: dashboard de analytics e detalhes das tarefas).
+        - **SSG:** Para páginas estáticas como institucionais, FAQ, e landing pages.
+        - **ISR:** Para atualizar páginas estáticas automaticamente conforme novos dados são inseridos (ex.: lista de tarefas).
+    - **Server Actions:** Para realizar operações do backend diretamente a partir dos componentes (por exemplo, ao salvar uma tarefa ou atualizar status).
+    - **Middleware:** Implementação de middlewares para autenticação e controle de acesso, garantindo que somente usuários autenticados acessem áreas protegidas.
+    - **Dynamic Routing:** Criação de rotas dinâmicas e aninhadas para, por exemplo, acessar detalhes de uma tarefa via `/tasks/[id]`.
+    - **Componentes Específicos:** Utilização dos componentes `<Image>`, `<Head>`, e `<Link>` para otimização de imagens, SEO e navegação.
+- **Better Auth:**
+    
+    Implementação de um sistema de autenticação robusto (em substituição ao NextAuth.js) para gerenciar sessões, cadastro, login e recuperação de senha.
+    
+- **Zustand:**
+    
+    Gerenciamento de estado global e local para filtros, modais, e outras interações da interface.
+    
+- **Prisma:**
+    
+    Modelagem e gerenciamento do banco de dados (ex.: PostgreSQL) para armazenar usuários, tarefas, comentários e atribuições.
+    
+- **PostHog:**
+    
+    Monitoramento de eventos e coleta de métricas para o dashboard de analytics.
+    
+- **shadcn e Lucide:**
+    
+    Para a criação de uma interface moderna e responsiva, com componentes UI reutilizáveis e ícones customizados.
+    
+- **Jest e Playwright:**
+    
+    Para testes unitários (Jest) e testes end-to-end (Playwright).
+    
+- **Docker e Docker Compose:**
+    
+    Para containerização e orquestração dos ambientes da aplicação e do banco de dados.
+    
+- **Internacionalização (i18n):**
+    
+    Configuração para oferecer suporte a múltiplos idiomas na aplicação.
+    
+
+---
+
+## 3. Organização do Repositório
+
+### Estrutura Geral
+
+Aqui eu dou um exemplo de como organizar, mas a estrutura de pastas é obrigatória
+
+```
+/ (raiz do projeto)
+├── public/                     # Arquivos estáticos (imagens, fontes, etc.)
+├── database/                   # Modelos e migrações do Prisma
+├── Components/                 # Componentes do shadcn customizados (se necessário)
+├── .env                        # Variáveis de ambiente
+├── package.json                # Dependências e scripts do projeto
+├── docker-compose.yml          # Orquestração de containers
+├── Dockerfile                  # Dockerfile da aplicação
+└── src/
+    ├── app/                    # App Router do Next15
+    │   ├── layout.tsx          # Layout global da aplicação
+    │   ├── error.tsx           # Página de erro global
+    │   └── loading.tsx         # Página de loading global
+    ├── features/               # Funcionalidades específicas do projeto
+    │   └── TaskManager/        # Feature de gerenciamento de tarefas
+    │       ├── page.tsx        # Página principal (overview) da feature
+    │       ├── components/     # Componentes específicos da feature
+    │       │   ├── TaskCard.tsx
+    │       │   ├── TaskForm.tsx
+    │       │   └── ...           # Outros componentes específicos
+    │       ├── actions/        # Server actions da feature
+    │       │   └── $task_actions.ts
+    │       └── store/          # Configuração da store local (Zustand) da feature
+    │           └── taskStore.ts
+    ├── Config/                 # Configurações globais (ex.: PostHog, Better Auth, etc.)
+    ├── lib/                    # Bibliotecas e instâncias compartilhadas (ex.: Prisma Client)
+    ├── components/             # Componentes reutilizáveis específicos do app
+    ├── actions/                # Ações compartilhadas entre features
+    ├── style/                  # Arquivos de estilo globais (global.css, variáveis, etc.)
+    ├── tests/                  # Configurações e scripts para testes
+    └── _shared/                # Recursos compartilhados entre features
+        ├── components/         # Componentes genéricos reutilizáveis (ex.: Button)
+        │   └── Button.tsx
+        ├── actions/            # Server actions genéricas compartilhadas
+        │   └── $shared_actions.ts
+        ├── util/               # Funções utilitárias e helpers (ex.: formatação de datas)
+        │   └── formatDate.ts
+        ├── hooks/              # Hooks customizados compartilhados (ex.: useDebounce)
+        │   └── useDebounce.ts
+        └── services/           # Serviços compartilhados (ex.: integração com APIs externas)
+            └── apiService.ts
+
+```
+
+### Detalhes da Organização
+
+- **src/app:**
+    
+    Define a estrutura global da aplicação com os arquivos de layout, erro e loading, que são essenciais para o novo App Router do Next15.
+    
+- **src/features/TaskManager:**
+    
+    Cada feature possui:
+    
+    - **page.tsx:** Uma página simples que agrupa os componentes da feature sem lógica pesada.
+    - **components/:** Contém os componentes específicos da funcionalidade, incluindo a implementação de UI, gerenciamento de estado (via Zustand) e interações com server actions. Cada componente pode ter testes de UI (Playwright).
+    - **actions/:** Pasta para as server actions específicas da feature, com testes unitários (Jest) em arquivos nomeados como `$task_actions.ts`.
+    - **store/:** Configuração da store local da feature utilizando Zustand.
+- **src/_shared:**
+    
+    Centraliza recursos reutilizáveis entre features (a maioria dos componentes devem nascer dentro das features, aí se você perceber que é praticamente igual, você deixa mais flexível e joga pra cá:
+    
+    - **components/:** Componentes genéricos reutilizáveis.
+    - **actions/:** Server actions que podem ser usadas em diversas partes do app.
+    - **util/:** Helpers e funções utilitárias.
+    - **hooks/:** Hooks customizados que encapsulam lógicas comuns.
+    - **services/:** Serviços para integrações e lógicas compartilhadas.
+- **Outras pastas:**
+    - **Config:** Configurações globais como integração com PostHog e Better Auth.
+    - **lib:** Instâncias compartilhadas, como o Prisma Client.
+    - **components:** Componentes específicos do app que podem ser reutilizados em mais de uma feature.
+    - **actions:** Ações comuns a várias features.
+    - **style:** CSS global e assets de estilo.
+    - **tests:** Configurações e scripts para a execução dos testes.
+    - **public:** Arquivos estáticos.
+    - **database:** Modelos e migrações do Prisma.
+    - **Components:** Componentes do shadcn customizados, se necessário.
