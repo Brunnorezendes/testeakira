@@ -13,7 +13,7 @@ import React from 'react';
 interface AuthCardWrapperProps {
   title: string;
   description: string;
-  children: React.ReactNode; // 'children' é uma propriedade especial para renderizar o conteúdo
+  children?: React.ReactNode; // 'children' é uma propriedade especial para renderizar o conteúdo
 }
 
 export function AuthCardWrapper({ title, description, children }: AuthCardWrapperProps) {

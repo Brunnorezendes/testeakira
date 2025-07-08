@@ -10,6 +10,10 @@ export const auth = betterAuth({
 
   emailAndPassword: {
     enabled: true,
+
+    async sendResetPassword(data) {
+      console.log(`[LINK DE RESET DE SENHA]: ${data.url}`);
+    },
   },
   
   pages: {
