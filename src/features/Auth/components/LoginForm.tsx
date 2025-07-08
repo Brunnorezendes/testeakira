@@ -12,9 +12,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export function LoginForm() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +39,7 @@ export function LoginForm() {
         throw new Error(result.error.message);
       }
       
-      window.location.href = '/tasks';
+      router.push('/login');
       // Se o login for bem-sucedido, o better-auth fará o redirecionamento
       // ou você pode forçar um aqui com window.location.href = '/dashboard';
 
