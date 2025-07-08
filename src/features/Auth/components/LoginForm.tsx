@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { authClient } from '@/lib/auth-client'; // 1. Importamos o CLIENTE de auth
+import { authClient } from '@/lib/auth-client';
 import {
   Card,
   CardContent,
@@ -13,36 +13,32 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-export function RegisterForm() {
-  // 2. Voltamos a usar 'useState' para os campos e erros
-  const [name, setName] = useState('');
+export function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // 3. Esta é a nossa função de submissão
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsLoading(true);
     setError(null);
-    setSuccess(null);
 
     try {
-      // 4. A MÁGICA FINAL: Usamos o authClient para registrar
-      const result = await authClient.signUp.email({
-        name,
+      // Usamos a função signIn.email do nosso authClient
+      const result = await authClient.signIn.email({
         email,
         password,
       });
 
-      // Se o better-auth retornar um erro na sua resposta
+      // Se o better-auth retornar um erro (ex: senha incorreta)
       if (result.error) {
         throw new Error(result.error.message);
       }
       
-      setSuccess('Conta criada com sucesso! Você pode fazer o login.');
+      window.location.href = '/';
+      // Se o login for bem-sucedido, o better-auth fará o redirecionamento
+      // ou você pode forçar um aqui com window.location.href = '/dashboard';
 
     } catch (err: any) {
       // Se a chamada falhar, mostramos o erro
@@ -55,25 +51,14 @@ export function RegisterForm() {
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
-        <CardTitle className="text-2xl">Criar Conta</CardTitle>
+        <CardTitle className="text-2xl">Login</CardTitle>
         <CardDescription>
-          Insira seus dados abaixo para criar sua conta.
+          Insira seu email abaixo para acessar sua conta.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {/* 5. O formulário agora chama nossa função handleSubmit */}
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name">Nome</Label>
-              <Input
-                id="name"
-                placeholder="Seu Nome Completo"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -102,14 +87,8 @@ export function RegisterForm() {
               </p>
             )}
 
-            {success && (
-              <p className="text-sm font-medium text-emerald-500">
-                {success}
-              </p>
-            )}
-
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Criando conta...' : 'Criar conta'}
+              {isLoading ? 'Entrando...' : 'Entrar'}
             </Button>
           </div>
         </form>
