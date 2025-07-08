@@ -32,11 +32,11 @@ export function LoginForm() {
       });
 
       // Se o better-auth retornar um erro (ex: senha incorreta)
-      if (result.error) {
+      if (result && result.error) {
         throw new Error(result.error.message);
       }
       
-      window.location.href = '/';
+      window.location.href = '/tasks';
       // Se o login for bem-sucedido, o better-auth fará o redirecionamento
       // ou você pode forçar um aqui com window.location.href = '/dashboard';
 
@@ -90,6 +90,7 @@ export function LoginForm() {
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? 'Entrando...' : 'Entrar'}
             </Button>
+            
           </div>
         </form>
       </CardContent>

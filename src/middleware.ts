@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 // O nome do cookie que o better-auth usa por padrão
-const sessionCookieName = 'testeakira-session';
+const sessionCookieName = 'better-auth.session_token';
 
 export function middleware(request: NextRequest) {
   // 1. Pega o cookie da sessão
