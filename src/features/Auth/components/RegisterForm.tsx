@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import Link from 'next/link';
 
 export function RegisterForm() {
   // 2. Voltamos a usar 'useState' para os campos e erros
@@ -111,6 +112,13 @@ export function RegisterForm() {
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? 'Criando conta...' : 'Criar conta'}
             </Button>
+
+            <div className="mt-4 text-center text-sm">
+              Já possui uma conta?{' '}
+              <Link href="/login" className="underline">
+                Fazer login
+              </Link>
+            </div>
           </div>
         </form>
       </CardContent>

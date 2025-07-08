@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import Link from 'next/link';
 
 export function LoginForm() {
   const [email, setEmail] = useState('');
@@ -91,6 +92,12 @@ export function LoginForm() {
               {isLoading ? 'Entrando...' : 'Entrar'}
             </Button>
             
+            <div className="mt-4 text-center text-sm">
+              Não tem uma conta?{' '}
+              <Link href="/register" className="underline">
+                Criar conta
+              </Link>
+            </div>
           </div>
         </form>
       </CardContent>
