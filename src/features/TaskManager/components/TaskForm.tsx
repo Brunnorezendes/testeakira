@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { TaskPriority } from '@prisma/client';
 import { useRouter } from 'next/navigation';
+import { useToast } from "@/hooks/use-toast"
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { CalendarIcon } from 'lucide-react';
@@ -42,6 +43,7 @@ interface TaskFormProps {
 
 export function TaskForm({ onFormSubmit }: TaskFormProps) {
   const router = useRouter();
+  const { toast } = useToast()
   
   const form = useForm<z.infer<typeof taskSchema>>({
     resolver: zodResolver(taskSchema),
@@ -56,9 +58,16 @@ export function TaskForm({ onFormSubmit }: TaskFormProps) {
   async function onSubmit(values: z.infer<typeof taskSchema>) {
     const result = await createTask(values);
     if (result.error) {
-      alert(result.error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao criar tarefa",
+        description: result.error,
+      })
     } else {
-      alert(result.success);
+      toast({
+        title: "Sucesso!",
+        description: "Sua tarefa foi criada.",
+      })
       if (onFormSubmit) onFormSubmit();
       router.refresh();
     }
