@@ -9,9 +9,9 @@ import { LayoutGrid, List } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { KanbanBoard } from './KanbanBoard';
-import { TaskList } from './TaskList'; // Importamos a nova lista
+import { TaskList } from './TaskList';
+import { EditTaskDialog } from './EditTaskDialog'; // Importamos o dialog de edição
 
-// Definimos os tipos de visualização possíveis
 type ViewMode = 'kanban' | 'list';
 
 interface TaskManagerProps {
@@ -19,15 +19,16 @@ interface TaskManagerProps {
 }
 
 export function TaskManager({ initialTasks }: TaskManagerProps) {
-  // 1. Adicionamos estado para controlar a visualização
-  const [viewMode, setViewMode] = useState<ViewMode>('kanban');
+  // 1. Estado para controlar a tarefa que está sendo editada
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
+  const [viewMode, setViewMode] = useState<ViewMode>('kanban');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [priorityFilter, setPriorityFilter] = useState('ALL');
   const [sortOrder, setSortOrder] = useState('createdAt-desc');
 
   const filteredAndSortedTasks = useMemo(() => {
-    // ... a lógica de filtro e ordenação permanece exatamente a mesma
+    // ... a lógica de filtro e ordenação permanece a mesma
     let tasks = [...initialTasks];
     if (statusFilter !== 'ALL') tasks = tasks.filter((task) => task.status === statusFilter);
     if (priorityFilter !== 'ALL') tasks = tasks.filter((task) => task.priority === priorityFilter);
@@ -39,29 +40,41 @@ export function TaskManager({ initialTasks }: TaskManagerProps) {
   }, [initialTasks, statusFilter, priorityFilter, sortOrder]);
 
   return (
-    <div>
-      <div className="flex flex-col sm:flex-row gap-4 justify-end mb-4">
-        {/* 2. Adicionamos os botões para alternar a visualização */}
-        <div className="flex items-center gap-2 mr-auto">
-          <Button variant={viewMode === 'kanban' ? 'default' : 'outline'} size="icon" onClick={() => setViewMode('kanban')}>
-            <LayoutGrid className="h-4 w-4" />
-          </Button>
-          <Button variant={viewMode === 'list' ? 'default' : 'outline'} size="icon" onClick={() => setViewMode('list')}>
-            <List className="h-4 w-4" />
-          </Button>
+    <> {/* Usamos um Fragment <> para poder renderizar múltiplos elementos no mesmo nível */}
+      <div>
+        <div className="flex flex-col sm:flex-row gap-4 justify-end mb-4">
+          <div className="flex items-center gap-2 mr-auto">
+            <Button variant={viewMode === 'kanban' ? 'default' : 'outline'} size="icon" onClick={() => setViewMode('kanban')}>
+              <LayoutGrid className="h-4 w-4" />
+            </Button>
+            <Button variant={viewMode === 'list' ? 'default' : 'outline'} size="icon" onClick={() => setViewMode('list')}>
+              <List className="h-4 w-4" />
+            </Button>
+          </div>
+          {/* Filtros e Ordenação */}
+          <Select value={statusFilter} onValueChange={setStatusFilter}><SelectTrigger className="w-full sm:w-[180px]"><SelectValue placeholder="Filtrar por status..." /></SelectTrigger><SelectContent><SelectItem value="ALL">Todos os Status</SelectItem><SelectItem value="A_FAZER">A Fazer</SelectItem><SelectItem value="EM_PROGRESSO">Em Progresso</SelectItem><SelectItem value="CONCLUIDO">Concluído</SelectItem></SelectContent></Select>
+          <Select value={priorityFilter} onValueChange={setPriorityFilter}><SelectTrigger className="w-full sm:w-[180px]"><SelectValue placeholder="Filtrar por prioridade..." /></SelectTrigger><SelectContent><SelectItem value="ALL">Todas as Prioridades</SelectItem><SelectItem value="ALTA">Alta</SelectItem><SelectItem value="MEDIA">Média</SelectItem><SelectItem value="BAIXA">Baixa</SelectItem></SelectContent></Select>
+          <Select value={sortOrder} onValueChange={setSortOrder}><SelectTrigger className="w-full sm:w-[180px]"><SelectValue placeholder="Ordenar por..." /></SelectTrigger><SelectContent><SelectItem value="createdAt-desc">Mais Recentes</SelectItem><SelectItem value="dueDate-asc">Data de Vencimento</SelectItem><SelectItem value="priority-desc">Prioridade</SelectItem></SelectContent></Select>
         </div>
 
-        {/* Filtros e Ordenação */}
-        <Select value={statusFilter} onValueChange={setStatusFilter}><SelectTrigger className="w-full sm:w-[180px]"><SelectValue placeholder="Filtrar por status..." /></SelectTrigger><SelectContent><SelectItem value="ALL">Todos os Status</SelectItem><SelectItem value="A_FAZER">A Fazer</SelectItem><SelectItem value="EM_PROGRESSO">Em Progresso</SelectItem><SelectItem value="CONCLUIDO">Concluído</SelectItem></SelectContent></Select>
-        <Select value={priorityFilter} onValueChange={setPriorityFilter}><SelectTrigger className="w-full sm:w-[180px]"><SelectValue placeholder="Filtrar por prioridade..." /></SelectTrigger><SelectContent><SelectItem value="ALL">Todas as Prioridades</SelectItem><SelectItem value="ALTA">Alta</SelectItem><SelectItem value="MEDIA">Média</SelectItem><SelectItem value="BAIXA">Baixa</SelectItem></SelectContent></Select>
-        <Select value={sortOrder} onValueChange={setSortOrder}><SelectTrigger className="w-full sm:w-[180px]"><SelectValue placeholder="Ordenar por..." /></SelectTrigger><SelectContent><SelectItem value="createdAt-desc">Mais Recentes</SelectItem><SelectItem value="dueDate-asc">Data de Vencimento</SelectItem><SelectItem value="priority-desc">Prioridade</SelectItem></SelectContent></Select>
+        <div>
+          {/* 3. Passamos a função para o TaskCard (através do Kanban ou Lista) para definir a tarefa a ser editada */}
+          {viewMode === 'kanban' && <KanbanBoard tasks={filteredAndSortedTasks} onTaskClick={setEditingTask} />}
+          {viewMode === 'list' && <TaskList tasks={filteredAndSortedTasks} onTaskClick={setEditingTask} />}
+        </div>
       </div>
 
-      {/* 3. Renderizamos o componente correto com base no viewMode */}
-      <div>
-        {viewMode === 'kanban' && <KanbanBoard tasks={filteredAndSortedTasks} />}
-        {viewMode === 'list' && <TaskList tasks={filteredAndSortedTasks} />}
-      </div>
-    </div>
+      {/* 4. Renderizamos o Dialog de Edição. Ele só será visível se 'editingTask' não for nulo. */}
+      {editingTask && (
+        <EditTaskDialog
+          task={editingTask}
+          isOpen={!!editingTask}
+          setIsOpen={() => setEditingTask(null)} // Fechar o dialog define o estado de volta para nulo
+        />
+      )}
+    </>
   );
 }
+
+// **Atenção:** Você precisará atualizar os componentes `KanbanBoard`, `KanbanColumn`, `TaskList` e `TaskListItem`
+// para que eles aceitem e repassem a prop `onTaskClick` até chegar ao `TaskCard`.

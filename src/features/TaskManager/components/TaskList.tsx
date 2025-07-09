@@ -7,9 +7,10 @@ import { TaskListItem } from './TaskListItem';
 
 interface TaskListProps {
   tasks: Task[];
+  onTaskClick: (task: Task) => void;
 }
 
-export function TaskList({ tasks }: TaskListProps) {
+export function TaskList({ tasks, onTaskClick }: TaskListProps) {
   return (
     <div className="border rounded-lg">
       {/* Cabeçalho da Lista */}
@@ -24,7 +25,13 @@ export function TaskList({ tasks }: TaskListProps) {
       {/* Corpo da Lista */}
       <div>
         {tasks.length > 0 ? (
-          tasks.map((task) => <TaskListItem key={task.id} task={task} />)
+          tasks.map((task) => (
+            <TaskListItem 
+              key={task.id} 
+              task={task} 
+              onClick={() => onTaskClick(task)} 
+            />
+          ))
         ) : (
           <p className="text-center text-muted-foreground p-8">Nenhuma tarefa encontrada para os filtros selecionados.</p>
         )}

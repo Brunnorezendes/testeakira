@@ -5,9 +5,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { TaskPriority } from '@prisma/client';
+import { Task, TaskPriority, TaskStatus } from '@prisma/client';
 import { useRouter } from 'next/navigation';
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/hooks/use-toast";
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { CalendarIcon } from 'lucide-react';
@@ -34,48 +34,68 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 
-import { taskSchema } from '../schemas';
 import { createTask } from '../actions/create-task.action';
+import { updateTask } from '../actions/update-task.action';
+import { taskFormSchema } from '../schemas';
 
 interface TaskFormProps {
+  task?: Task;
   onFormSubmit?: () => void;
 }
 
-export function TaskForm({ onFormSubmit }: TaskFormProps) {
+export function TaskForm({ task, onFormSubmit }: TaskFormProps) {
   const router = useRouter();
-  const { toast } = useToast()
-  
-  const form = useForm<z.infer<typeof taskSchema>>({
-    resolver: zodResolver(taskSchema),
-    defaultValues: {
-      title: '',
-      description: '',
-      priority: TaskPriority.MEDIA,
-      dueDate: undefined,
-    },
+  const { toast } = useToast();
+  const isEditMode = !!task;
+
+  // 2. Usamos sempre o mesmo schema, simplificando os tipos
+  const form = useForm<z.infer<typeof taskFormSchema>>({
+    resolver: zodResolver(taskFormSchema),
+    defaultValues: isEditMode
+      ? {
+          id: task.id,
+          title: task.title,
+          description: task.description || '',
+          status: task.status,
+          priority: task.priority,
+          dueDate: task.dueDate || undefined,
+        }
+      : {
+          title: '',
+          description: '',
+          priority: TaskPriority.MEDIA,
+          dueDate: undefined,
+        },
   });
 
-  async function onSubmit(values: z.infer<typeof taskSchema>) {
-    const result = await createTask(values);
+  async function onSubmit(values: z.infer<typeof taskFormSchema>) {
+    const action = isEditMode ? updateTask : createTask;
+    // @ts-ignore
+    const result = await action(values);
+
     if (result.error) {
       toast({
         variant: "destructive",
-        title: "Erro ao criar tarefa",
-        description: result.error,
-      })
+        title: "Erro",
+        description: result.error
+      });
     } else {
       toast({
         title: "Sucesso!",
-        description: "Sua tarefa foi criada.",
-      })
-      if (onFormSubmit) onFormSubmit();
-      router.refresh();
+        description: result.success
+      });
+      if (onFormSubmit) {
+        onFormSubmit();
+      }
     }
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-6"
+      >
         <FormField
           control={form.control}
           name="title"
@@ -83,13 +103,13 @@ export function TaskForm({ onFormSubmit }: TaskFormProps) {
             <FormItem>
               <FormLabel>Título</FormLabel>
               <FormControl>
-                <Input placeholder="Ex: Criar relatório mensal" {...field} />
+                <Input {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-
+        
         <FormField
           control={form.control}
           name="description"
@@ -98,7 +118,6 @@ export function TaskForm({ onFormSubmit }: TaskFormProps) {
               <FormLabel>Descrição (Opcional)</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Adicione mais detalhes sobre a tarefa (links, lembretes, subtarefas)..."
                   className="resize-none"
                   {...field}
                 />
@@ -107,6 +126,34 @@ export function TaskForm({ onFormSubmit }: TaskFormProps) {
             </FormItem>
           )}
         />
+        
+        {isEditMode && (
+          <FormField
+            control={form.control}
+            name="status"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Status</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value={TaskStatus.A_FAZER}>A Fazer</SelectItem>
+                    <SelectItem value={TaskStatus.EM_PROGRESSO}>Em Progresso</SelectItem>
+                    <SelectItem value={TaskStatus.CONCLUIDO}>Concluído</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <div className="flex flex-col sm:flex-row gap-4">
           <FormField
@@ -121,7 +168,7 @@ export function TaskForm({ onFormSubmit }: TaskFormProps) {
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione uma prioridade" />
+                      <SelectValue />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -161,7 +208,7 @@ export function TaskForm({ onFormSubmit }: TaskFormProps) {
                   <PopoverContent className="w-auto p-0">
                     <Calendar
                       mode="single"
-                      selected={field.value}
+                      selected={field.value || undefined}
                       onSelect={field.onChange}
                       initialFocus
                     />
@@ -173,8 +220,12 @@ export function TaskForm({ onFormSubmit }: TaskFormProps) {
           />
         </div>
         
-        <Button type="submit" disabled={form.formState.isSubmitting} className="w-full">
-            {form.formState.isSubmitting ? 'Salvando...' : 'Salvar Tarefa'}
+        <Button
+          type="submit"
+          disabled={form.formState.isSubmitting}
+          className="w-full"
+        >
+          {form.formState.isSubmitting ? 'Salvando...' : (isEditMode ? 'Salvar Alterações' : 'Criar Tarefa')}
         </Button>
       </form>
     </Form>

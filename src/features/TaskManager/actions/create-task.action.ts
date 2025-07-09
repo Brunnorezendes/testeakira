@@ -6,11 +6,11 @@ import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { getCurrentUserSession } from '@/_shared/services/sessionService';
 // 1. Importamos nosso schema do seu novo local
-import { taskSchema } from '../schemas';
+import { taskFormSchema } from '../schemas';
 
-export async function createTask(values: z.infer<typeof taskSchema>) {
+export async function createTask(values: z.infer<typeof taskFormSchema>) {
   const session = await getCurrentUserSession();
-  const validatedFields = taskSchema.safeParse(values);
+  const validatedFields = taskFormSchema.safeParse(values);
 
   if (!validatedFields.success) {
     return { error: 'Dados inválidos.' };
