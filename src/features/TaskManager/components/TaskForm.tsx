@@ -98,7 +98,7 @@ export function TaskForm({ onFormSubmit }: TaskFormProps) {
               <FormLabel>Descrição (Opcional)</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Adicione mais detalhes sobre a tarefa..."
+                  placeholder="Adicione mais detalhes sobre a tarefa (links, lembretes, subtarefas)..."
                   className="resize-none"
                   {...field}
                 />
