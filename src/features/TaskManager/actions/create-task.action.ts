@@ -16,14 +16,13 @@ export async function createTask(values: z.infer<typeof taskSchema>) {
     return { error: 'Dados inválidos.' };
   }
 
-  const { title, description, status, priority, dueDate } = validatedFields.data;
+  const { title, description, priority, dueDate } = validatedFields.data;
 
   try {
     await prisma.task.create({
       data: {
         title,
         description,
-        status,
         priority,
         dueDate,
         userId: session.user.id,
