@@ -72,6 +72,12 @@ export function LoginForm() {
               Criar conta
             </Link>
           </div>
+          <div className="text-center text-sm">
+            Esqueceu a senha?{' '}
+            <Link href="/forgot-password" className="underline">
+              Trocar senha
+            </Link>
+          </div>
         </div>
       </form>
     </AuthCardWrapper>
