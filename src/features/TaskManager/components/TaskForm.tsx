@@ -5,14 +5,16 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { TaskStatus, TaskPriority } from '@prisma/client';
+import { TaskPriority } from '@prisma/client';
 import { useRouter } from 'next/navigation';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { CalendarIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -28,53 +30,43 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
 
-import { taskSchema } from '../schemas'; // Importamos nosso schema Zod
-import { createTask } from '../actions/create-task.action'; // Importamos a action
+import { taskSchema } from '../schemas';
+import { createTask } from '../actions/create-task.action';
 
-// Definimos as props que o formulário aceitará
 interface TaskFormProps {
-  onFormSubmit?: () => void; // Uma função opcional para ser chamada após o sucesso
+  onFormSubmit?: () => void;
 }
 
 export function TaskForm({ onFormSubmit }: TaskFormProps) {
   const router = useRouter();
   
-  // 1. Configuração do formulário com react-hook-form e Zod
   const form = useForm<z.infer<typeof taskSchema>>({
     resolver: zodResolver(taskSchema),
     defaultValues: {
       title: '',
       description: '',
-      status: TaskStatus.A_FAZER,
       priority: TaskPriority.MEDIA,
+      dueDate: undefined,
     },
   });
 
-  // 2. Função que lida com o envio do formulário
   async function onSubmit(values: z.infer<typeof taskSchema>) {
     const result = await createTask(values);
-
     if (result.error) {
-      // No futuro, podemos usar uma biblioteca de "toasts" para mostrar erros
       alert(result.error);
     } else {
       alert(result.success);
-      if (onFormSubmit) {
-        onFormSubmit(); // Fecha o modal, se a função for passada
-      }
-      router.refresh(); // Atualiza os dados da página para mostrar a nova tarefa
+      if (onFormSubmit) onFormSubmit();
+      router.refresh();
     }
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        {/* Campo de Título */}
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="title"
@@ -88,7 +80,7 @@ export function TaskForm({ onFormSubmit }: TaskFormProps) {
             </FormItem>
           )}
         />
-        {/* Campo de Descrição */}
+
         <FormField
           control={form.control}
           name="description"
@@ -106,54 +98,73 @@ export function TaskForm({ onFormSubmit }: TaskFormProps) {
             </FormItem>
           )}
         />
-        {/* Campo de Status */}
-        <FormField
-          control={form.control}
-          name="status"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Status</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione um status" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value={TaskStatus.A_FAZER}>A Fazer</SelectItem>
-                  <SelectItem value={TaskStatus.EM_PROGRESSO}>Em Progresso</SelectItem>
-                  <SelectItem value={TaskStatus.CONCLUIDO}>Concluído</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {/* Campo de Prioridade */}
-        <FormField
-          control={form.control}
-          name="priority"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Prioridade</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione uma prioridade" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value={TaskPriority.BAIXA}>Baixa</SelectItem>
-                  <SelectItem value={TaskPriority.MEDIA}>Média</SelectItem>
-                  <SelectItem value={TaskPriority.ALTA}>Alta</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+
+        <div className="flex flex-col sm:flex-row gap-4">
+          <FormField
+            control={form.control}
+            name="priority"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormLabel>Prioridade</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione uma prioridade" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value={TaskPriority.BAIXA}>Baixa</SelectItem>
+                    <SelectItem value={TaskPriority.MEDIA}>Média</SelectItem>
+                    <SelectItem value={TaskPriority.ALTA}>Alta</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="dueDate"
+            render={({ field }) => (
+              <FormItem className="flex flex-col flex-1">
+                <FormLabel>Data de Vencimento</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {field.value ? (
+                        format(field.value, "PPP", { locale: ptBR })
+                      ) : (
+                        <span>Escolha uma data</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         
-        <Button type="submit" disabled={form.formState.isSubmitting}>
+        <Button type="submit" disabled={form.formState.isSubmitting} className="w-full">
             {form.formState.isSubmitting ? 'Salvando...' : 'Salvar Tarefa'}
         </Button>
       </form>
