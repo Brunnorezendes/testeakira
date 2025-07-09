@@ -2,30 +2,31 @@
 
 import { Metadata } from 'next';
 import { getCurrentUserSession } from '@/_shared/services/sessionService';
-import { getUserTasks } from '@/features/TaskManager/actions/index'; // Importamos nossa nova action
+import { getUserTasks } from '@/features/TaskManager/actions';
+// 1. Importamos nosso novo componente de modal
+import { CreateTaskDialog } from '@/features/TaskManager/components/CreateTaskDialog';
 
 export const metadata: Metadata = {
   title: 'Minhas Tarefas',
 };
 
 export default async function TasksPage() {
-  // 1. Verificamos a sessão e pegamos os dados do usuário
   const session = await getCurrentUserSession();
-
-  // 2. Buscamos as tarefas do usuário logado
   const tasks = await getUserTasks();
 
   return (
     <div className="p-8">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">Bem-vindo, {session.user?.name}!</h1>
-        <p className="mt-2 text-muted-foreground">Aqui estão suas tarefas atuais.</p>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-3xl font-bold">Bem-vindo, {session.user?.name}!</h1>
+          <p className="mt-2 text-muted-foreground">Aqui estão suas tarefas atuais.</p>
+        </div>
+        {/* 2. Adicionamos o nosso componente aqui */}
+        <CreateTaskDialog />
       </div>
 
-      {/* 3. Lógica para exibir as tarefas ou uma mensagem */}
       <div>
         {tasks.length > 0 ? (
-          // No futuro, aqui chamaremos um componente <TaskList tasks={tasks} />
           <ul>
             {tasks.map((task) => (
               <li key={task.id} className="border-b p-2">
@@ -35,9 +36,11 @@ export default async function TasksPage() {
           </ul>
         ) : (
           <div className="text-center p-8 border-2 border-dashed rounded-lg">
-            <p>Você ainda não tem nenhuma tarefa.</p>
-            <p className="text-sm text-muted-foreground">Que tal criar a primeira?</p>
-            {/* No futuro, aqui teremos um <CreateTaskButton /> */}
+            <h2 className="text-xl font-semibold">Tudo limpo por aqui!</h2>
+            <p className="text-sm text-muted-foreground mt-2">
+              Você ainda não tem nenhuma tarefa. Que tal criar a primeira?
+            </p>
+            {/* O botão agora fica visível para o usuário */}
           </div>
         )}
       </div>
