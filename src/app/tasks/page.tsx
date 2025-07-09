@@ -4,44 +4,37 @@ import { Metadata } from 'next';
 import { getCurrentUserSession } from '@/_shared/services/sessionService';
 import { getUserTasks } from '@/features/TaskManager/actions';
 import { CreateTaskDialog } from '@/features/TaskManager/components/CreateTaskDialog';
-import { TaskCard } from '@/features/TaskManager/components/TaskCard'; // 1. Importamos nosso novo card
+import { TaskManager } from '@/features/TaskManager/components/TaskManager'; // Importamos nosso novo gerenciador
 
 export const metadata: Metadata = {
-  title: 'Minhas Tarefas',
+  title: 'Meu Quadro de Tarefas',
 };
 
 export default async function TasksPage() {
-  const session = await getCurrentUserSession();
+  await getCurrentUserSession();
   const tasks = await getUserTasks();
 
   return (
     <div className="p-4 md:p-8">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Bem-vindo, {session.user?.name}!</h1>
-          <p className="mt-2 text-muted-foreground">Aqui estão suas tarefas atuais.</p>
+          <h1 className="text-3xl font-bold">Quadro de Tarefas</h1>
+          <p className="mt-2 text-muted-foreground">Organize seu trabalho de forma visual.</p>
         </div>
         <CreateTaskDialog />
       </div>
-
-      <div>
-        {tasks.length > 0 ? (
-          // 2. Usamos um grid para exibir os cards de forma organizada
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {tasks.map((task) => (
-              <TaskCard key={task.id} task={task} />
-            ))}
-          </div>
-        ) : (
-          // 3. A mensagem para quando não há tarefas
-          <div className="text-center p-8 border-2 border-dashed rounded-lg mt-8">
-            <h2 className="text-xl font-semibold">Tudo limpo por aqui!</h2>
-            <p className="text-sm text-muted-foreground mt-2">
-              Clique em "Criar Nova Tarefa" para começar.
-            </p>
-          </div>
-        )}
-      </div>
+      
+      {tasks.length > 0 ? (
+        // Passamos as tarefas iniciais para o TaskManager
+        <TaskManager initialTasks={tasks} />
+      ) : (
+        <div className="text-center p-8 border-2 border-dashed rounded-lg mt-8">
+          <h2 className="text-xl font-semibold">Tudo limpo por aqui!</h2>
+          <p className="text-sm text-muted-foreground mt-2">
+            Clique em "Criar Nova Tarefa" para começar.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
