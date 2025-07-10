@@ -87,6 +87,7 @@ export function TaskForm({ task, onFormSubmit }: TaskFormProps) {
       if (onFormSubmit) {
         onFormSubmit();
       }
+      router.refresh();
     }
   }
 
