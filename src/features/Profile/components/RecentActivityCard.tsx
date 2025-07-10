@@ -2,38 +2,63 @@
 
 'use client';
 
-import { Task } from '@prisma/client';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { format } from 'date-fns';
+import { Activity } from '@prisma/client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { History } from 'lucide-react';
 
 interface RecentActivityCardProps {
-  tasks: Task[];
+  activities: Activity[]; // Agora ele espera uma lista de atividades
 }
 
-export function RecentActivityCard({ tasks }: RecentActivityCardProps) {
+export function RecentActivityCard({ activities }: RecentActivityCardProps) {
+  
+  const formatActionText = (action: string, details: string | null) => {
+    switch (action) {
+      case 'CREATE_TASK':
+        return `Você criou a tarefa: ${details}`;
+      case 'UPDATE_TASK':
+        return `Você atualizou a tarefa: ${details}`;
+      case 'DELETE_TASK':
+        return `Você excluiu a tarefa: ${details}`;
+      default:
+        return 'Atividade desconhecida.';
+    }
+  }
+
   return (
     <div>
-        <h2 className="text-2xl font-bold mb-4">Atividade Recente</h2>
-        <Card>
-          <CardContent className="p-6 space-y-4">
-            {tasks.length > 0 ? (
-              tasks.slice(0, 5).map((task) => (
-                <div key={task.id} className="flex items-center justify-between">
-                  <div>
-                    <p className="font-semibold">{task.title}</p>
-                    <p className="text-sm text-muted-foreground">
-                      Criada em {format(new Date(task.createdAt), "dd/MM/yyyy")}
-                    </p>
-                  </div>
-                  <Badge variant="outline">{task.status.replace('_', ' ')}</Badge>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <History className="h-6 w-6" />
+            Atividade Recente
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {activities.length > 0 ? (
+            activities.map((activity) => (
+              <div key={activity.id} className="flex items-start gap-3">
+                <div className="flex-1">
+                  <p className="text-sm">
+                    {formatActionText(activity.action, activity.details)}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {/* Usamos formatDistanceToNow para um tempo relativo, como "cerca de 2 horas atrás" */}
+                    {formatDistanceToNow(new Date(activity.createdAt), {
+                      addSuffix: true,
+                      locale: ptBR,
+                    })}
+                  </p>
                 </div>
-              ))
-            ) : (
-              <p className="text-sm text-muted-foreground">Nenhuma atividade de tarefas encontrada.</p>
-            )}
-          </CardContent>
-        </Card>
+              </div>
+            ))
+          ) : (
+            <p className="text-sm text-muted-foreground">Nenhuma atividade recente encontrada.</p>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
