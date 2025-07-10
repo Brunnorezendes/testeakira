@@ -12,7 +12,7 @@ model User {
   name          String
   email         String
   emailVerified Boolean
-  image         String?
+  image         String?   @default("/avatars/boy.png")
   createdAt     DateTime
   updatedAt     DateTime
   sessions      Session[]
