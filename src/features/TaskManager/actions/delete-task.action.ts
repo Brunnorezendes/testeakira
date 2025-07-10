@@ -21,6 +21,16 @@ export async function deleteTask(taskId: number) {
       return { error: 'Tarefa não encontrada ou você não tem permissão para excluí-la.' };
     }
 
+    await prisma.activity.create({
+      data: {
+        userId: session.user.id,
+        action: 'DELETE_TASK',
+        entityId: task.id.toString(),
+        entityType: 'TASK',
+        details: `Excluiu a tarefa "${task.title}"`,
+      },
+    });
+
     await prisma.task.delete({
       where: {
         id: taskId,
@@ -28,6 +38,7 @@ export async function deleteTask(taskId: number) {
     });
 
     revalidatePath('/tasks');
+    revalidatePath('/profile');
     return { success: 'Tarefa excluída com sucesso!' };
 
   } catch (error) {

@@ -19,6 +19,10 @@ export async function updateTask(values: z.infer<typeof taskFormSchema>) {
 
   const { id, ...dataToUpdate } = validatedFields.data;
 
+  if (typeof id === 'undefined' || id === null) {
+    return { error: 'ID da tarefa não fornecido.' };
+  }
+
   try {
     const task = await prisma.task.findFirst({
       where: { id: id, userId: session.user.id },
@@ -31,6 +35,16 @@ export async function updateTask(values: z.infer<typeof taskFormSchema>) {
     await prisma.task.update({
       where: { id: id },
       data: dataToUpdate,
+    });
+
+    await prisma.activity.create({
+      data: {
+        userId: session.user.id,
+        action: 'UPDATE_TASK',
+        entityId: id.toString(),
+        entityType: 'TASK',
+        details: `Atualizou a tarefa "${dataToUpdate.title}"`,
+      },
     });
     
     revalidatePath('/tasks');

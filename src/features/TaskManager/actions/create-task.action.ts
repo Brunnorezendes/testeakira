@@ -19,13 +19,22 @@ export async function createTask(values: z.infer<typeof taskFormSchema>) {
   const { title, description, priority, dueDate } = validatedFields.data;
 
   try {
-    await prisma.task.create({
+    const newTask = await prisma.task.create({
       data: {
         title,
         description,
         priority,
         dueDate,
         userId: session.user.id,
+      },
+    });
+    await prisma.activity.create({
+      data: {
+        userId: session.user.id,
+        action: 'CREATE_TASK',
+        entityId: newTask.id.toString(),
+        entityType: 'TASK',
+        details: `Criou a tarefa "${newTask.title}"`,
       },
     });
     return { success: 'Tarefa criada com sucesso!' };

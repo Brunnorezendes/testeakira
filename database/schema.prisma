@@ -19,6 +19,7 @@ model User {
   accounts      Account[]
 
   tasks         Task[]
+  activities Activity[]
 
   @@unique([email])
   @@map("user")
@@ -94,4 +95,20 @@ model Task {
   
   user        User?    @relation(fields: [userId], references: [id])
   userId      String?
+}
+
+model Activity {
+  id        String       @id @default(cuid())
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  action    String       // Ex: "CREATE_TASK", "UPDATE_TASK_STATUS"
+  entityId  String       // O ID da entidade (ex: o ID da tarefa)
+  entityType String      // O tipo da entidade (ex: "TASK")
+  details   String?      // Um texto opcional com mais detalhes
+
+  createdAt DateTime     @default(now())
+
+  // Isso cria um índice para buscar atividades por usuário de forma mais rápida
+  @@index([userId])
 }
