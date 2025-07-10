@@ -22,7 +22,7 @@ export async function getUserActivity() {
       createdAt: 'desc',
     },
     // Limitamos a um número razoável de atividades para não sobrecarregar a página
-    take: 20,
+    take: 10,
   });
 
   return activities;
