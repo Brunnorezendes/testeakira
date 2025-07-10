@@ -1,7 +1,8 @@
-// src/features/TaskManager/components/TaskCard.tsx
+// src/features/TaskManager/components/TaskCard.tsx - Versão Arrastável
 
 'use client';
 
+import { useDraggable } from '@dnd-kit/core'; // 1. Importamos o hook
 import { Task, TaskStatus } from '@prisma/client';
 import { format, isPast } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -13,10 +14,21 @@ import { cn } from '@/lib/utils';
 
 interface TaskCardProps {
   task: Task;
-  onClick: () => void; // 1. Adicionamos a prop onClick
+  // A prop onClick será usada de uma forma diferente agora, então a mantemos
+  onClick: () => void; 
 }
 
 export function TaskCard({ task, onClick }: TaskCardProps) {
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: task.id, // O ID único do nosso item arrastável
+    data: { task }, // Passamos os dados completos da tarefa para o contexto do dnd-kit
+  });
+
+  const style = transform ? {
+    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+  } : undefined;
+
+
   const isOverdue = task.dueDate && isPast(new Date(task.dueDate)) && task.status !== TaskStatus.CONCLUIDO;
 
   const getPriorityVariant = (priority: string) => {
@@ -33,9 +45,19 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
   };
 
   return (
-    // 2. Envolvemos o Card em um botão para torná-lo clicável e acessível
-    <button onClick={onClick} className="text-left w-full">
-      <Card className={cn("hover:bg-muted/80", isOverdue && "border-destructive")}>
+    // 2. Usamos um div como o elemento principal para aplicar as propriedades do dnd-kit
+    <div
+      ref={setNodeRef}
+      style={style}
+      // O 'onClick' agora é para abrir o modal de edição
+      // Os 'listeners' são para iniciar o arrastar
+      // Os 'attributes' são para acessibilidade
+      {...listeners}
+      {...attributes}
+      onClick={onClick}
+      className="text-left w-full cursor-grab"
+    >
+      <Card className={cn("hover:border-primary", isOverdue && "border-destructive")}>
         <CardHeader>
           <div className="flex justify-between items-start gap-2">
             <div className="flex-1">
@@ -57,6 +79,6 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
           </div>
         </CardHeader>
       </Card>
-    </button>
+    </div>
   );
 }

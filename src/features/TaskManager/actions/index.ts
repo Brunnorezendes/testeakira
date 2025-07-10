@@ -2,5 +2,6 @@
 
 export * from './create-task.action';
 export * from './get-tasks.action';
-export * from './update-task.action'; // Adicione esta linha
-export * from './delete-task.action'; // Adicione esta linha
+export * from './update-task.action';
+export * from './delete-task.action';
+export * from './update-task-status.action'; // Adicione esta linha

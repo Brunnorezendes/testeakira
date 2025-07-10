@@ -1,19 +1,33 @@
-// src/features/TaskManager/components/KanbanColumn.tsx
+// src/features/TaskManager/components/KanbanColumn.tsx - Versão Soltável
 
 'use client';
 
-import { Task } from '@prisma/client';
+import { useDroppable } from '@dnd-kit/core'; // 1. Importamos o hook
+import { Task, TaskStatus } from '@prisma/client';
 import { TaskCard } from './TaskCard';
+import { cn } from '@/lib/utils';
 
 interface KanbanColumnProps {
   title: string;
+  status: TaskStatus; // Agora a coluna sabe qual status ela representa
   tasks: Task[];
   onTaskClick: (task: Task) => void;
 }
 
-export function KanbanColumn({ title, tasks, onTaskClick }: KanbanColumnProps) {
+export function KanbanColumn({ title, status, tasks, onTaskClick }: KanbanColumnProps) {
+  const { isOver, setNodeRef } = useDroppable({
+    id: status, // O ID da nossa área soltável será o próprio status (ex: "A_FAZER")
+  });
+
   return (
-    <div className="flex flex-col gap-4 bg-muted/50 p-4 rounded-lg min-h-[200px]">
+    // 2. Aplicamos o 'setNodeRef' e um estilo condicional para feedback visual
+    <div
+      ref={setNodeRef}
+      className={cn(
+        "flex flex-col gap-4 bg-muted/50 p-4 rounded-lg min-h-[200px] transition-colors",
+        isOver && "bg-primary/20" // Fica com uma cor de destaque quando um card está sobre ela
+      )}
+    >
       <h2 className="text-lg font-semibold text-center tracking-wider">{title}</h2>
       <div className="flex flex-col gap-4">
         {tasks.length > 0 ? (
