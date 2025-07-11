@@ -8,6 +8,12 @@ import { getCurrentUserSession } from '@/_shared/services/sessionService';
 import { revalidatePath } from 'next/cache';
 // Importamos o schema do seu local correto
 import { taskFormSchema } from '../schemas';
+import { PostHog } from 'posthog-node';
+
+const posthog = new PostHog(
+  process.env.NEXT_PUBLIC_POSTHOG_KEY!,
+  { host: process.env.NEXT_PUBLIC_POSTHOG_HOST! }
+)
 
 export async function updateTask(values: z.infer<typeof taskFormSchema>) {
   const session = await getCurrentUserSession();
@@ -44,6 +50,17 @@ export async function updateTask(values: z.infer<typeof taskFormSchema>) {
         entityId: id.toString(),
         entityType: 'TASK',
         details: `Atualizou a tarefa "${dataToUpdate.title}"`,
+      },
+    });
+
+    await posthog.capture({
+      distinctId: session.user.id, // O ID do usuário que realizou a ação
+      event: 'task_updated',       // O nome do nosso evento customizado
+      properties: {                // Dados extras que queremos associar ao evento
+        taskId: task.id,
+        taskTitle: task.title,
+        priority: task.priority,
+        status: task.status
       },
     });
     
