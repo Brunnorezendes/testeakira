@@ -7,7 +7,9 @@ import { authClient } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { AuthCardWrapper } from '@/_shared/components/AuthCardWrapper'; // 1. Importamos nosso Wrapper
+import { AuthCardWrapper } from '@/_shared/components/AuthCardWrapper';
+import { signIn } from '../actions/signIn.action';
+import { sign } from 'crypto';
 
 export function LoginForm() {
   const router = useRouter();
@@ -25,6 +27,7 @@ export function LoginForm() {
       if (result && result.error) {
         throw new Error(result.error.message);
       }
+      signIn(); // Chama a ação de login
       router.push('/tasks');
     } catch (err: any) {
       setError(err.message || 'Credenciais inválidas ou erro no servidor.');
