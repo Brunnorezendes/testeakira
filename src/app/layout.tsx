@@ -1,9 +1,10 @@
 // src/app/layout.tsx
 
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google"; // Suas fontes
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { PostHogProvider } from "@/Config/PostHogProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,7 +15,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
 
 export const metadata: Metadata = {
   title: "Akira Tasks",
@@ -29,8 +29,11 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children} {/* Renderiza diretamente o conteúdo da rota */}
-        <Toaster />
+        {/* O RootLayout agora só se preocupa com provedores globais */}
+        <PostHogProvider>
+          {children} {/* Renderiza diretamente o layout da rota ativa */}
+          <Toaster />
+        </PostHogProvider>
       </body>
     </html>
   );
