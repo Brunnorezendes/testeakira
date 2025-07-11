@@ -9,19 +9,30 @@ import { ptBR } from 'date-fns/locale';
 import { History } from 'lucide-react';
 
 interface RecentActivityCardProps {
-  activities: Activity[]; // Agora ele espera uma lista de atividades
+  activities: Activity[];
 }
 
 export function RecentActivityCard({ activities }: RecentActivityCardProps) {
   
+  // O nosso "dicionário" de tradução
   const formatActionText = (action: string, details: string | null) => {
+    // Usamos um objeto para os detalhes para garantir consistência
+    const detailsText = details ? `"${details}"` : '';
+
     switch (action) {
       case 'CREATE_TASK':
-        return `Você criou a tarefa: ${details}`;
+        return `Você criou a tarefa: ${detailsText}`;
       case 'UPDATE_TASK':
-        return `Você atualizou a tarefa: ${details}`;
+        return `Você atualizou a tarefa: ${detailsText}`;
       case 'DELETE_TASK':
-        return `Você excluiu a tarefa: ${details}`;
+        return `Você excluiu a tarefa: ${detailsText}`;
+      
+      // --- AQUI ESTÁ A CORREÇÃO ---
+      // Ensinamos a ele como traduzir a nova atividade
+      case 'UPDATE_TASK_STATUS':
+        // A action já nos dá o texto completo, então podemos usar `details` diretamente.
+        return details; // Ex: "Moveu a tarefa "X" para o status "Em Progresso""
+
       default:
         return 'Atividade desconhecida.';
     }
@@ -45,7 +56,6 @@ export function RecentActivityCard({ activities }: RecentActivityCardProps) {
                     {formatActionText(activity.action, activity.details)}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {/* Usamos formatDistanceToNow para um tempo relativo, como "cerca de 2 horas atrás" */}
                     {formatDistanceToNow(new Date(activity.createdAt), {
                       addSuffix: true,
                       locale: ptBR,
