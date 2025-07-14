@@ -81,6 +81,11 @@ export function LoginForm() {
               Trocar senha
             </Link>
           </div>
+          <div>
+            <Link href="/" className="text-muted-foreground hover:text-primary underline">
+                Voltar para a página inicial
+            </Link>
+        </div>
         </div>
       </form>
     </AuthCardWrapper>
