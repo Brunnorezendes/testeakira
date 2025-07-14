@@ -27,7 +27,9 @@ export function LoginForm() {
       if (result && result.error) {
         throw new Error(result.error.message);
       }
+      console.log('Login successful:', result);
       signIn();
+      console.log('Redirecionando para /tasks');
       router.push('/tasks');
     } catch (err: any) {
       setError(err.message || 'Credenciais inválidas ou erro no servidor.');
