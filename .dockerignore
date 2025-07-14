@@ -1,0 +1,26 @@
+# Ignorar dependências que devem ser instaladas DENTRO do contêiner
+node_modules
+.venv
+venv
+env
+
+# Ignorar metadados do Git, que são desnecessários na imagem
+.git
+.gitignore
+
+# Ignorar arquivos de ambiente (devem ser gerenciados de outra forma)
+.env
+*.env
+
+# Ignorar arquivos de configuração do Docker e logs
+Dockerfile
+docker-compose.yml
+.dockerignore
+npm-debug.log
+*.log
+
+# Ignorar pastas de build da sua IDE ou de processos locais
+dist
+build
+.vscode
+.idea
