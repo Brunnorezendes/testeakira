@@ -1,7 +1,19 @@
-// src/middleware.ts - VERSÃO FINAL E CORRETA
-import { auth } from '@/lib/auth';
+// src/middleware.ts
 
-export default auth;
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+const sessionCookieName = 'better-auth.session_token';
+
+export function middleware(request: NextRequest) {
+  const sessionCookie = request.cookies.get(sessionCookieName);
+
+  if (!sessionCookie) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [
