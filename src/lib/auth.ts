@@ -24,7 +24,6 @@ export const auth = betterAuth({
         });
       } catch (error) {
         console.error('Falha ao enviar email de reset:', error);
-        // Lançar o erro garante que o better-auth saiba que o envio falhou
         throw new Error('Não foi possível enviar o email de recuperação.');
       }
     },
