@@ -3,7 +3,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const sessionCookieName = 'better-auth.session_token';
+const sessionCookieName = '__Secure-better-auth.session_token';
 
 export function middleware(request: NextRequest) {
   const sessionCookie = request.cookies.get(sessionCookieName);
