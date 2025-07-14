@@ -3,6 +3,6 @@ import type { auth } from "./auth.ts";
 import { inferAdditionalFields } from "better-auth/client/plugins";
 
 export const authClient = createAuthClient({
-    baseURL: "http://localhost:3000",
+    baseURL: "https://testeakira.vercel.app",
     plugins: [inferAdditionalFields<typeof auth>()],
 });
