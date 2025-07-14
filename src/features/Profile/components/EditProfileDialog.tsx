@@ -16,8 +16,16 @@ import {
 } from '@/components/ui/dialog';
 import { UserProfileForm } from './UserProfileForm';
 
+export type SessionUser = {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null; // A propriedade image é opcional, aceitando undefined.
+  createdAt: Date;
+};
+
 interface EditProfileDialogProps {
-  user: User;
+  user: SessionUser;
 }
 
 export function EditProfileDialog({ user }: EditProfileDialogProps) {

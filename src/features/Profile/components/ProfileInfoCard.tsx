@@ -10,8 +10,16 @@ import { ptBR } from 'date-fns/locale';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { EditProfileDialog } from './EditProfileDialog';
 
+type SessionUser = {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null; // A propriedade image é opcional, aceitando undefined.
+  createdAt: Date;
+};
+
 interface ProfileInfoCardProps {
-  user: User;
+  user: SessionUser;
 }
 
 export function ProfileInfoCard({ user }: ProfileInfoCardProps) {

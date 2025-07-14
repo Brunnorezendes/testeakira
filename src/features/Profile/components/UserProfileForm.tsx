@@ -27,8 +27,16 @@ import { cn } from '@/lib/utils';
 import { updateUserSchema } from '../schemas';
 import { updateUser } from '../actions/update-user.action';
 
+export type SessionUser = {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null; // A propriedade image é opcional, aceitando undefined.
+  createdAt: Date;
+};
+
 interface UserProfileFormProps {
-  user: User;
+  user: SessionUser;
   onFormSubmit?: () => void;
 }
 
