@@ -41,7 +41,6 @@ export async function updateTaskStatus(data: z.infer<typeof updateStatusSchema>)
       return { error: 'Tarefa não encontrada ou sem permissão.' };
     }
 
-    // Atualizamos o status da tarefa
     await prisma.task.update({
       where: {
         id: taskId,
@@ -51,8 +50,6 @@ export async function updateTaskStatus(data: z.infer<typeof updateStatusSchema>)
       },
     });
 
-    // --- AQUI ESTÁ A CORREÇÃO ---
-    // Registramos a atividade de mudança de status no histórico.
     await prisma.activity.create({
       data: {
         userId: session.user.id,
@@ -62,12 +59,11 @@ export async function updateTaskStatus(data: z.infer<typeof updateStatusSchema>)
         details: `Moveu a tarefa "${task.title}" para o status "${status.replace('_', ' ')}"`,
       },
     });
-    // ---------------------------------
 
     await posthog.capture({
-      distinctId: session.user.id, // O ID do usuário que realizou a ação
-      event: 'task_updated',       // O nome do nosso evento customizado
-      properties: {                // Dados extras que queremos associar ao evento
+      distinctId: session.user.id,
+      event: 'task_updated',
+      properties: {
         taskId: task.id,
         taskTitle: task.title,
         priority: task.priority,
@@ -76,7 +72,7 @@ export async function updateTaskStatus(data: z.infer<typeof updateStatusSchema>)
     });
     
     revalidatePath('/tasks');
-    revalidatePath('/profile'); // Garantimos que o perfil também seja atualizado
+    revalidatePath('/profile');
     return { success: `Status da tarefa atualizado para ${status}.` };
 
   } catch (error) {

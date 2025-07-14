@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 
 interface TaskListItemProps {
   task: Task;
-  onClick: () => void; // Prop para tornar a linha clicável
+  onClick: () => void;
 }
 
 export function TaskListItem({ task, onClick }: TaskListItemProps) {
@@ -57,7 +57,7 @@ export function TaskListItem({ task, onClick }: TaskListItemProps) {
             {format(new Date(task.dueDate), "dd MMM, yyyy", { locale: ptBR })}
           </span>
         ) : (
-          <div className="w-36" /> /* Espaçador para manter o alinhamento */
+          <div className="w-36" />
         )}
       </div>
     </button>

@@ -48,7 +48,6 @@ export function TaskForm({ task, onFormSubmit }: TaskFormProps) {
   const { toast } = useToast();
   const isEditMode = !!task;
 
-  // 2. Usamos sempre o mesmo schema, simplificando os tipos
   const form = useForm<z.infer<typeof taskFormSchema>>({
     resolver: zodResolver(taskFormSchema),
     defaultValues: isEditMode

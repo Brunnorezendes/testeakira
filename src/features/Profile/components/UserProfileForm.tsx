@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { useToast } from "@/hooks/use-toast";
 import { User } from '@prisma/client';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation'; // 1. Importamos o useRouter
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -39,7 +39,7 @@ const avatars = [
 
 export function UserProfileForm({ user, onFormSubmit }: UserProfileFormProps) {
   const { toast } = useToast();
-  const router = useRouter(); // 2. Criamos uma instância do roteador
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof updateUserSchema>>({
     resolver: zodResolver(updateUserSchema),
@@ -57,9 +57,6 @@ export function UserProfileForm({ user, onFormSubmit }: UserProfileFormProps) {
     } else {
       toast({ title: "Sucesso!", description: result.success });
       if (onFormSubmit) onFormSubmit();
-      
-      // 3. AQUI ESTÁ A CORREÇÃO LÓGICA
-      // Forçamos o cliente a buscar os novos dados do servidor
       router.refresh();
     }
   }

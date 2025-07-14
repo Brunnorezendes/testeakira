@@ -29,9 +29,8 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {/* O RootLayout agora só se preocupa com provedores globais */}
         <PostHogProvider>
-          {children} {/* Renderiza diretamente o layout da rota ativa */}
+          {children}
           <Toaster />
         </PostHogProvider>
       </body>

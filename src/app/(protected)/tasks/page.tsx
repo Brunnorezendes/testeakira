@@ -25,7 +25,6 @@ export default async function TasksPage() {
       </div>
       
       {tasks.length > 0 ? (
-        // Passamos as tarefas iniciais para o TaskManager
         <TaskManager initialTasks={tasks} />
       ) : (
         <div className="text-center p-8 border-2 border-dashed rounded-lg mt-8">

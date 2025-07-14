@@ -1,5 +1,3 @@
-// src/_shared/components/AuthCardWrapper.tsx
-
 import {
   Card,
   CardContent,
@@ -9,11 +7,10 @@ import {
 } from '@/components/ui/card';
 import React from 'react';
 
-// Definimos as propriedades que nosso invólucro irá aceitar
 interface AuthCardWrapperProps {
   title: string;
   description: string;
-  children?: React.ReactNode; // 'children' é uma propriedade especial para renderizar o conteúdo
+  children?: React.ReactNode;
 }
 
 export function AuthCardWrapper({ title, description, children }: AuthCardWrapperProps) {

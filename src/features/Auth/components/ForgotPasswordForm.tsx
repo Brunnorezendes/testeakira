@@ -6,7 +6,7 @@ import { authClient } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { AuthCardWrapper } from '@/_shared/components/AuthCardWrapper'; // 1. Importamos o Wrapper
+import { AuthCardWrapper } from '@/_shared/components/AuthCardWrapper';
 
 export function ForgotPasswordForm() {
   const [email, setEmail] = useState('');
@@ -36,7 +36,6 @@ export function ForgotPasswordForm() {
   };
 
   return (
-    // 2. Usamos o Wrapper, simplificando o código
     <AuthCardWrapper
       title="Esqueceu a Senha?"
       description="Digite seu e-mail e enviaremos um link para redefinir sua senha."

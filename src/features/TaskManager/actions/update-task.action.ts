@@ -6,7 +6,6 @@ import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { getCurrentUserSession } from '@/_shared/services/sessionService';
 import { revalidatePath } from 'next/cache';
-// Importamos o schema do seu local correto
 import { taskFormSchema } from '../schemas';
 import { PostHog } from 'posthog-node';
 
@@ -54,9 +53,9 @@ export async function updateTask(values: z.infer<typeof taskFormSchema>) {
     });
 
     await posthog.capture({
-      distinctId: session.user.id, // O ID do usuário que realizou a ação
-      event: 'task_updated',       // O nome do nosso evento customizado
-      properties: {                // Dados extras que queremos associar ao evento
+      distinctId: session.user.id,
+      event: 'task_updated',
+      properties: {
         taskId: task.id,
         taskTitle: task.title,
         priority: task.priority,

@@ -16,9 +16,8 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Adicionamos a nova rota à nossa lista de rotas protegidas
   matcher: [
     '/tasks/:path*',
-    '/profile/:path*', // Protege /profile e qualquer sub-rota como /profile/settings
+    '/profile/:path*',
   ],
 };

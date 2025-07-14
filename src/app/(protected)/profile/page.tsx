@@ -2,7 +2,6 @@
 
 import { Metadata } from 'next';
 import { getCurrentUserSession } from '@/_shared/services/sessionService';
-// 1. Importamos a nova action para buscar atividades
 import { getUserActivity } from '@/features/Profile/actions/get-user-activity.action';
 
 import { ProfileInfoCard } from '@/features/Profile/components/ProfileInfoCard';
@@ -14,7 +13,6 @@ export const metadata: Metadata = {
 
 export default async function ProfilePage() {
   const session = await getCurrentUserSession();
-  // 2. Buscamos as atividades em vez das tarefas
   const activities = await getUserActivity();
 
   return (
@@ -24,7 +22,6 @@ export default async function ProfilePage() {
           <ProfileInfoCard user={session.user} />
         </div>
         <div className="md:col-span-2">
-          {/* 3. Passamos os dados de atividade para o componente */}
           <RecentActivityCard activities={activities} />
         </div>
       </div>

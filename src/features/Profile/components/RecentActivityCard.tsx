@@ -13,10 +13,7 @@ interface RecentActivityCardProps {
 }
 
 export function RecentActivityCard({ activities }: RecentActivityCardProps) {
-  
-  // O nosso "dicionário" de tradução
   const formatActionText = (action: string, details: string | null) => {
-    // Usamos um objeto para os detalhes para garantir consistência
     const detailsText = details ? `"${details}"` : '';
 
     switch (action) {
@@ -26,13 +23,8 @@ export function RecentActivityCard({ activities }: RecentActivityCardProps) {
         return `Você atualizou a tarefa: ${detailsText}`;
       case 'DELETE_TASK':
         return `Você excluiu a tarefa: ${detailsText}`;
-      
-      // --- AQUI ESTÁ A CORREÇÃO ---
-      // Ensinamos a ele como traduzir a nova atividade
       case 'UPDATE_TASK_STATUS':
-        // A action já nos dá o texto completo, então podemos usar `details` diretamente.
-        return details; // Ex: "Moveu a tarefa "X" para o status "Em Progresso""
-
+        return details;
       default:
         return 'Atividade desconhecida.';
     }

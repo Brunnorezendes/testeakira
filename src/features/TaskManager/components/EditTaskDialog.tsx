@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button';
 import { TaskForm } from './TaskForm';
 import { deleteTask } from '../actions/delete-task.action';
 
-// 1. Importamos os componentes do AlertDialog
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,7 +40,7 @@ export function EditTaskDialog({ task, isOpen, setIsOpen }: EditTaskDialogProps)
       toast({ variant: "destructive", title: "Erro", description: result.error });
     } else {
       toast({ title: "Sucesso!", description: result.success });
-      setIsOpen(false); // Fecha o modal principal de edição
+      setIsOpen(false);
     }
     setIsDeleteLoading(false);
   };
@@ -58,7 +57,6 @@ export function EditTaskDialog({ task, isOpen, setIsOpen }: EditTaskDialogProps)
         <TaskForm task={task} onFormSubmit={() => setIsOpen(false)} />
         
         <div className="pt-4">
-          {/* 2. O botão de deletar agora é um gatilho para o AlertDialog */}
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
@@ -79,7 +77,6 @@ export function EditTaskDialog({ task, isOpen, setIsOpen }: EditTaskDialogProps)
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                {/* A ação de continuar chama nossa função handleDelete */}
                 <AlertDialogAction onClick={handleDelete}>Continuar</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

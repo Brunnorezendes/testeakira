@@ -38,9 +38,9 @@ export async function deleteTask(taskId: number) {
     });
 
     await posthog.capture({
-      distinctId: session.user.id, // O ID do usuário que realizou a ação
-      event: 'task_deleted',       // O nome do nosso evento customizado
-      properties: {                // Dados extras que queremos associar ao evento
+      distinctId: session.user.id,
+      event: 'task_deleted',
+      properties: {
         taskId: task.id,
         taskTitle: task.title,
         priority: task.priority,

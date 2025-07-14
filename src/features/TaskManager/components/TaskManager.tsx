@@ -7,7 +7,6 @@ import { useState, useMemo, useEffect } from 'react';
 import { LayoutGrid, List } from 'lucide-react';
 import { createPortal } from 'react-dom';
 
-// Importações do dnd-kit para o Drag and Drop
 import {
   DndContext,
   DragEndEvent,
@@ -18,7 +17,6 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 
-// Importações dos seus componentes e hooks
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { KanbanBoard } from './KanbanBoard';
@@ -37,30 +35,24 @@ interface TaskManagerProps {
 export function TaskManager({ initialTasks }: TaskManagerProps) {
   const { toast } = useToast();
   
-  // --- ESTADOS FUNDAMENTAIS (PRESERVADOS E CORRIGIDOS) ---
   const [tasks, setTasks] = useState(initialTasks);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [activeTask, setActiveTask] = useState<Task | null>(null); // Para o 'fantasma' do D&D
+  const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [isMounted, setIsMounted] = useState(false);
 
-  // Estados dos filtros e ordenação que foram acidentalmente removidos
   const [viewMode, setViewMode] = useState<ViewMode>('kanban');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [priorityFilter, setPriorityFilter] = useState('ALL');
   const [sortOrder, setSortOrder] = useState('createdAt-desc');
-  // --------------------------------------------------------
 
-  // useEffect para sincronizar com os dados do servidor (corrige a atualização após criar tarefa)
   useEffect(() => {
     setTasks(initialTasks);
   }, [initialTasks]);
 
-  // useEffect para garantir que o código do lado do cliente rode com segurança
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // useMemo para filtrar e ordenar a lista de tarefas de forma eficiente
   const filteredAndSortedTasks = useMemo(() => {
     let tasksToProcess = [...tasks];
     if (statusFilter !== 'ALL') tasksToProcess = tasksToProcess.filter((task) => task.status === statusFilter);

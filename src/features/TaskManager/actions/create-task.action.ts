@@ -5,7 +5,6 @@
 import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { getCurrentUserSession } from '@/_shared/services/sessionService';
-// 1. Importamos nosso schema do seu novo local
 import { taskFormSchema } from '../schemas';
 import { revalidatePath } from 'next/cache';
 import { PostHog } from 'posthog-node';
@@ -46,15 +45,14 @@ export async function createTask(values: z.infer<typeof taskFormSchema>) {
     });
 
     await posthog.capture({
-      distinctId: session.user.id, // O ID do usuário que realizou a ação
-      event: 'task_created',       // O nome do nosso evento customizado
-      properties: {                // Dados extras que queremos associar ao evento
+      distinctId: session.user.id,
+      event: 'task_created',
+      properties: {
         taskId: newTask.id,
         taskTitle: newTask.title,
         priority: newTask.priority,
       },
     });
-    // Garantimos que o PostHog envie o evento antes de continuar
     await posthog.shutdown();
     revalidatePath('/tasks');
     return { success: 'Tarefa criada com sucesso!' };

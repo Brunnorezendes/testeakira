@@ -15,10 +15,8 @@ const posthog = new PostHog(
 
 export async function signOut() {
   try {
-
     const session = await getCurrentUserSession();
 
-    // 3. Se houver uma sessão, capturamos o evento de logout
     if (session?.user) {
       await posthog.capture({
         distinctId: session.user.id,
@@ -27,19 +25,15 @@ export async function signOut() {
       await posthog.shutdown();
     }
 
-    // 1. AWAIT AQUI: Resolvemos a promessa dos headers primeiro.
     const requestHeaders = await headers();
 
-    // 2. Agora, passamos o objeto de headers já resolvido para a função signOut.
     await auth.api.signOut({
       headers: requestHeaders,
     });
-    
 
   } catch (error) {
     console.error('Falha ao executar o signOut no servidor:', error);
   } finally {
-    // 3. O redirecionamento acontece independentemente do resultado.
     redirect('/login');
   }
 }

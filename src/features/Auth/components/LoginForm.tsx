@@ -27,7 +27,7 @@ export function LoginForm() {
       if (result && result.error) {
         throw new Error(result.error.message);
       }
-      signIn(); // Chama a ação de login
+      signIn();
       router.push('/tasks');
     } catch (err: any) {
       setError(err.message || 'Credenciais inválidas ou erro no servidor.');
@@ -36,12 +36,10 @@ export function LoginForm() {
   };
 
   return (
-    // 2. Usamos o Wrapper, passando o título e a descrição
     <AuthCardWrapper
       title="Login"
       description="Insira seu email abaixo para acessar sua conta."
     >
-      {/* 3. O conteúdo do card agora é só o formulário */}
       <form onSubmit={handleSubmit}>
         <div className="grid gap-4">
           <div className="grid gap-2">

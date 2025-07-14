@@ -16,7 +16,6 @@ export async function updateUser(values: z.infer<typeof updateUserSchema>) {
     return { error: 'Dados inválidos.' };
   }
 
-  // Agora pegamos tanto o nome quanto a imagem dos dados validados.
   const { name, image } = validatedFields.data;
 
   try {
@@ -26,7 +25,7 @@ export async function updateUser(values: z.infer<typeof updateUserSchema>) {
       },
       data: {
         name: name,
-        image: image, // Adicionamos a atualização da imagem
+        image: image,
       },
     });
 

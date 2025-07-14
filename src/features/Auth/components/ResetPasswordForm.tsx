@@ -22,7 +22,6 @@ function ResetPasswordFormComponent() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent) => {
-    // ... (a lógica do handleSubmit permanece a mesma)
     event.preventDefault();
     if (newPassword !== confirmPassword) {
       setError('As senhas não coincidem.');
@@ -56,7 +55,6 @@ function ResetPasswordFormComponent() {
         title="Erro de Token"
         description="O link de redefinição é inválido ou o token está ausente. Por favor, solicite um novo link."
       >
-        {/* Renderiza nada dentro do card em caso de erro de token */}
       </AuthCardWrapper>
     );
   }

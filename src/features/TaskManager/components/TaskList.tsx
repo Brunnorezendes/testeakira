@@ -22,7 +22,6 @@ export function TaskList({ tasks, onTaskClick }: TaskListProps) {
           <span className="w-36 text-right">VENCIMENTO</span>
         </div>
       </div>
-      {/* Corpo da Lista */}
       <div>
         {tasks.length > 0 ? (
           tasks.map((task) => (

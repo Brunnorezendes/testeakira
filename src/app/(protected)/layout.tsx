@@ -1,6 +1,6 @@
 // src/app/(protected)/layout.tsx
 
-import { Header } from "@/_shared/components/Header"; // Importamos nosso Header
+import { Header } from "@/_shared/components/Header";
 
 export default function ProtectedLayout({
   children,
